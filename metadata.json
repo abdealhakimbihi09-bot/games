@@ -1,0 +1,5 @@
+{
+  "name": "BEST GAME Store",
+  "description": "A sleek, dark-themed game store interface featuring a responsive grid of game cards, interactive hover effects, and a functional countdown timer. Built with React and Tailwind CSS.",
+  "requestFramePermissions": []
+}
