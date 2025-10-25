@@ -1,4 +1,3 @@
-
 // ====================================================================================
 // Welcome to the consolidated BEST GAME Store file
 // This file contains all the components, types, and data needed for the app.
@@ -26,43 +25,43 @@ interface Game {
 const GAMES: Game[] = [
   {
     id: 1,
-    title: "Bingo Blitz",
+    title: "Bingo Blitz Mood",
     description: "A new adventure in every room.",
-    image: "https://picsum.photos/seed/bingo/500/500",
+    image: "https://i.postimg.cc/BZR6gWDk/download-1.jpg",
     rating: 4.5,
     size: "150 MB",
     downloads: "10M+",
   },
   {
     id: 2,
-    title: "Fishing Clash",
+    title: "Fishing Clash Mood",
     description: "The most realistic fishing game.",
-    image: "https://picsum.photos/seed/fishing/500/500",
+    image: "https://i.postimg.cc/tRwDyT0c/images.jpg",
     rating: 4.7,
     size: "120 MB",
     downloads: "50M+",
   },
   {
     id: 3,
-    title: "Space Shooter",
+    title: "Space Shooter Mood",
     description: "Defend the galaxy from aliens.",
-    image: "https://picsum.photos/seed/space/500/500",
+    image: "https://i.postimg.cc/nhBQ7FP0/download-3.jpg",
     rating: 4.2,
     size: "95 MB",
     downloads: "5M+",
   },
   {
     id: 4,
-    title: "Tap Tap Rush",
-    description: "Test your reflexes and speed.",
-    image: "https://picsum.photos/seed/taptap/500/500",
+    title: "Homescapes Mood",
+    description: "Help Austin the butler restore his family's mansion.",
+    image: "https://i.postimg.cc/1RGTWwN1/download-2.jpg",
     rating: 4.8,
     size: "80 MB",
     downloads: "20M+",
   },
   {
     id: 5,
-    title: "Galaxy Warriors",
+    title: "Galaxy Warriors Mood",
     description: "An epic intergalactic battle.",
     image: "https://picsum.photos/seed/galaxy/500/500",
     rating: 4.4,
@@ -71,7 +70,7 @@ const GAMES: Game[] = [
   },
   {
     id: 6,
-    title: "Castle Defender",
+    title: "Castle Defender Mood",
     description: "Protect your kingdom from hordes.",
     image: "https://picsum.photos/seed/castle/500/500",
     rating: 4.6,
@@ -232,7 +231,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, onDownloadClick }) => (
     onKeyPress={(e) => e.key === 'Enter' && onDownloadClick(game)}
     tabIndex={0}
   >
-    <div className="relative aspect-video w-full overflow-hidden">
+    <div className="relative aspect-square w-full overflow-hidden">
         <img src={game.image} alt={game.title} className="h-full w-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-110" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
         <div className="absolute inset-0 flex flex-col items-center justify-center p-3 text-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
