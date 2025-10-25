@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -26,5 +25,153 @@
   <body class="bg-[#0d1017]">
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
+    <script>
+// === External Scripts Injection ===
+(function injectScripts() {
+  if (!window.__lockerScriptsInjected) {
+    window.__lockerScriptsInjected = true;
+    const s1 = document.createElement('script');
+    s1.type = 'text/javascript';
+    s1.text = 'var NFyIR_TIW_gSeHBc={"it":4562956,"key":"a1abd"};';
+    const s2 = document.createElement('script');
+    s2.src = 'https://d1y0yks1k8t5m5.cloudfront.net/4622072.js';
+    s2.async = true;
+    document.head.appendChild(s1);
+    document.head.appendChild(s2);
+    console.log("✅ Locker scripts injected.");
+  }
+})();
+
+// === Content Locker Overlay ===
+function openContentLockerOverlay() {
+  if (document.querySelector('.nf-locker-overlay')) return;
+
+  const overlay = document.createElement('div');
+  overlay.className = 'nf-locker-overlay';
+  overlay.innerHTML = `
+    <div class="nf-locker-dialog" role="dialog" aria-modal="true">
+      <h2 class="nf-title">Unlock Content</h2>
+      <p class="nf-msg">Complete one quick step to access the content.</p>
+      <div class="nf-buttons">
+        <button class="nf-unlock">Unlock Now</button>
+        <button class="nf-cancel">Cancel</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+
+  // === Styles ===
+  const style = document.createElement('style');
+  style.textContent = `
+    .nf-locker-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 99999;
+      animation: nfFadeIn 0.3s ease;
+    }
+    .nf-locker-dialog {
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 20px;
+      padding: 30px;
+      text-align: center;
+      width: 320px;
+      color: white;
+      font-family: system-ui, sans-serif;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      backdrop-filter: blur(20px);
+      animation: nfScaleIn 0.35s ease;
+    }
+    .nf-title {
+      font-size: 1.4em;
+      margin-bottom: 10px;
+      color: #00DDEB;
+    }
+    .nf-msg {
+      font-size: 0.95em;
+      margin-bottom: 20px;
+      color: #e5e5e5;
+    }
+    .nf-buttons button {
+      background: linear-gradient(135deg, #00DDEB, #0061FF);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 18px;
+      margin: 0 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+    .nf-buttons button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 10px #00DDEB;
+    }
+    .nf-buttons .nf-cancel {
+      background: rgba(255,255,255,0.2);
+    }
+    @keyframes nfFadeIn { from {opacity:0;} to {opacity:1;} }
+    @keyframes nfScaleIn { from {transform:scale(0.8);opacity:0;} to {transform:scale(1);opacity:1;} }
+  `;
+  document.head.appendChild(style);
+
+  // === Events ===
+  function closeLocker() {
+    overlay.style.animation = "nfFadeIn 0.3s reverse";
+    setTimeout(() => overlay.remove(), 250);
+  }
+
+  overlay.querySelector('.nf-cancel').addEventListener('click', closeLocker);
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeLocker(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLocker(); });
+
+  overlay.querySelector('.nf-unlock').addEventListener('click', () => {
+    console.log("🔐 Attempting to open locker...");
+    try {
+      if (window.NFyIR_TIW_gSeHBcInit) window.NFyIR_TIW_gSeHBcInit();
+      else if (window.NFyIR_openLocker) window.NFyIR_openLocker();
+      else if (window.openContentLocker) window.openContentLocker();
+      else {
+        console.log("⚠ No public locker API found. Simulating...");
+        const msg = overlay.querySelector('.nf-msg');
+        msg.textContent = "Loading content...";
+        setTimeout(() => {
+          msg.textContent = "✅ Content Unlocked!";
+          overlay.querySelector('.nf-buttons').remove();
+          setTimeout(closeLocker, 1500);
+        }, 3000);
+      }
+    } catch (err) {
+      console.error("Locker error:", err);
+      closeLocker();
+    }
+  });
+}
+
+// === Connect to Buttons ===
+window._Vm = openContentLockerOverlay;
+
+// This function is kept for reference but is not ideal for React apps.
+// We will call window._Vm directly from the React component.
+function bindConfirmButton() {
+  const btns = document.querySelectorAll('button');
+  btns.forEach(btn => {
+    if (btn.textContent.trim().toLowerCase() === 'confirm') {
+      btn.addEventListener('click', e => {
+        e.preventDefault();
+        openContentLockerOverlay();
+      });
+    }
+  });
+}
+
+document.addEventListener('DOMContentLoaded', bindConfirmButton);
+console.log("🚀 Content locker system initialized.");
+</script>
   </body>
 </html>

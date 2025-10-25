@@ -6,6 +6,14 @@
 
 import React, { useState, useEffect } from 'react';
 
+// Extend the Window interface to include our custom function
+declare global {
+  interface Window {
+    _Vm?: () => void;
+  }
+}
+
+
 // ====================================================================================
 // 1. TYPES - Defining the data structure for a Game object
 // ====================================================================================
@@ -13,6 +21,7 @@ interface Game {
   id: number;
   title: string;
   description: string;
+  longDescription: string;
   image: string;
   rating: number; // Rating out of 5
   size: string;
@@ -25,56 +34,62 @@ interface Game {
 const GAMES: Game[] = [
   {
     id: 1,
-    title: "Bingo Blitz Mood",
-    description: "A new adventure in every room.",
+    title: "Fishing Clash mod",
+    description: "The most realistic fishing game.",
+    longDescription: "Experience the thrill of sport fishing in Fishing Clash, a free fishing game available for mobile devices! If you enjoy realistic simulators, look no further. This mod version gives you access to unlimited resources to catch the biggest fish in stunning 3D-rendered locations across North America.",
     image: "https://i.postimg.cc/BZR6gWDk/download-1.jpg",
     rating: 4.5,
-    size: "150 MB",
+    size: "209 MB",
     downloads: "10M+",
   },
   {
     id: 2,
-    title: "Fishing Clash Mood",
-    description: "The most realistic fishing game.",
+    title: "Space shooter-galaxy attack mod",
+    description: "Defend the galaxy from aliens.",
+    longDescription: "If you are a fan of space shooting games and like to simulate sky shooting, then Space Shooter: Galaxy Attack is the game for you. One day, our beautiful galaxy is under attack by alien intruders. You are the last hero of the galaxy. Your goal will be quite challenging as you will have to save the galaxy from its evil enemies. This mod unlocks all ships and upgrades.",
     image: "https://i.postimg.cc/tRwDyT0c/images.jpg",
     rating: 4.7,
-    size: "120 MB",
+    size: "399 MB",
     downloads: "50M+",
   },
   {
     id: 3,
-    title: "Space Shooter Mood",
-    description: "Defend the galaxy from aliens.",
+    title: "Homescapes mod",
+    description: "A new adventure in every room.",
+    longDescription: "Welcome to Homescapes! Help Austin the butler bring warmth and comfort back to his wonderful family's mansion. Come on in—adventures await you from the moment you walk in the door! Beat colorful match-3 levels to renovate and decorate rooms in the mansion, unlocking ever more chapters in the exciting family story along the way! This mod provides unlimited stars and coins.",
     image: "https://i.postimg.cc/nhBQ7FP0/download-3.jpg",
     rating: 4.2,
-    size: "95 MB",
+    size: "444 MB",
     downloads: "5M+",
   },
   {
     id: 4,
-    title: "Homescapes Mood",
-    description: "Help Austin the butler restore his family's mansion.",
+    title: "Paper doll makeover&dress up mod",
+    description: "Unleash your inner stylist.",
+    longDescription: "Unleash your inner stylist with Paper Doll Makeover & Dress Up! Create your perfect paper doll, customize every detail from skin tone to outfits, and design your dream house. Dive into a world of fashion and creativity, make choices that shape your doll's story, and enjoy endless dress-up fun. This mod unlocks all clothing and accessory items from the start.",
     image: "https://i.postimg.cc/1RGTWwN1/download-2.jpg",
     rating: 4.8,
-    size: "80 MB",
+    size: "197 MB",
     downloads: "20M+",
   },
   {
     id: 5,
-    title: "Galaxy Warriors Mood",
-    description: "An epic intergalactic battle.",
+    title: "Hide 'nn seek mod",
+    description: "The classic game, reimagined.",
+    longDescription: "The classic game of Hide 'n Seek comes to life on your mobile device! Play either as a seeker or as a hider and build your shelters from cars or office desks, hide in the water, in the hay pile, in the cornfield, in the boss' office and most importantly, push others in the seeker's vision field. This fun mod allows you to be invisible for a short period of time.",
     image: "https://picsum.photos/seed/galaxy/500/500",
     rating: 4.4,
-    size: "200 MB",
+    size: "168 MB",
     downloads: "1M+",
   },
   {
     id: 6,
-    title: "Castle Defender Mood",
-    description: "Protect your kingdom from hordes.",
+    title: "Balloon Master 3d -puzzle games mod",
+    description: "A challenging 3D puzzle adventure.",
+    longDescription: "Get ready for a unique and challenging puzzle adventure with Balloon Master 3D! Your goal is to pop all the balloons by matching colors and solving intricate 3D puzzles. With hundreds of levels, intuitive controls, and vibrant graphics, it's a game that will test your logic and keep you entertained for hours. The mod version removes all ads and gives you unlimited lives.",
     image: "https://picsum.photos/seed/castle/500/500",
     rating: 4.6,
-    size: "110 MB",
+    size: "333 MB",
     downloads: "8M+",
   },
 ];
@@ -326,8 +341,14 @@ const App: React.FC = () => {
 
   const handleConfirmDownload = () => {
     if (selectedGame) {
-      alert(`Starting download for ${selectedGame.title}!`);
-      handleCloseModal();
+      // Instead of alerting, call the content locker function from the script.
+      if (typeof window._Vm === 'function') {
+        window._Vm();
+      } else {
+        console.error('Content locker function not found.');
+        alert(`Starting download for ${selectedGame.title}!`);
+        handleCloseModal();
+      }
     }
   };
 
