@@ -169,15 +169,8 @@ const CinematicBackgroundStyles = () => (
       .cinematic-bg .vignette {
         position: absolute;
         inset: 0;
-        box-shadow: inset 0 0 15vw rgba(0,0,0,0.8);
+        box-shadow: inset 0 0 20vw rgba(0,0,0,0.8);
         z-index: 2;
-      }
-      .cinematic-bg .gradient-overlay {
-        position: absolute;
-        inset: 0;
-        background: radial-gradient(circle at center, rgba(13, 117, 129, 0.2), transparent 60%);
-        animation: slow-pan 25s ease-in-out infinite alternate;
-        z-index: 1;
       }
       .cinematic-bg .film-grain {
         position: absolute;
@@ -187,31 +180,46 @@ const CinematicBackgroundStyles = () => (
         z-index: 3;
         pointer-events: none;
       }
-      .light-ray {
+
+      .wave-container {
         position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 400%;
-        height: 200px;
-        background: linear-gradient(to bottom, rgba(0, 150, 200, 0.05), transparent);
-        transform-origin: center center;
-        opacity: 0;
-        animation: light-ray-anim 20s ease-in-out infinite;
+        inset: 0;
+        filter: blur(80px);
+        transform: translate(calc(var(--mouse-x) * -20px - 50%), calc(var(--mouse-y) * -20px - 50%));
         transition: transform 0.4s ease-out;
       }
-      .light-ray:nth-child(1) { transform: rotate(25deg); animation-delay: 0s; }
-      .light-ray:nth-child(2) { transform: rotate(-25deg); animation-delay: -10s; }
+      .wave {
+        position: absolute;
+        border-radius: 45%;
+        opacity: 0.2;
+        animation: wave-anim 20s infinite alternate ease-in-out;
+      }
+      .wave-1 {
+        width: 60vmax;
+        height: 60vmax;
+        top: -10%;
+        left: -10%;
+        background: radial-gradient(#00BFFF, transparent 60%);
+      }
+      .wave-2 {
+        width: 50vmax;
+        height: 50vmax;
+        bottom: -20%;
+        right: -20%;
+        background: radial-gradient(#B94DFF, transparent 60%);
+        animation-delay: -10s;
+      }
       
       .particle {
         position: absolute;
         border-radius: 50%;
-        background-color: rgba(0, 200, 255, 0.5);
+        background-color: var(--particle-bg-color);
         transition: transform 0.35s ease-out;
       }
       
       .bokeh {
         filter: blur(4px);
-        box-shadow: 0 0 10px rgba(0, 200, 255, 0.8), 0 0 20px rgba(0, 200, 255, 0.6);
+        box-shadow: 0 0 10px var(--particle-glow-color), 0 0 20px var(--particle-glow-color);
         animation: particle-drift 25s linear infinite;
       }
 
@@ -220,19 +228,9 @@ const CinematicBackgroundStyles = () => (
         animation: particle-drift 40s linear infinite reverse;
       }
 
-      @keyframes slow-pan {
-        from { transform: scale(1.1) translate(0, 0); }
-        to { transform: scale(1.1) translate(2%, 4%); }
-      }
-      @keyframes light-ray-anim {
-        0%, 100% { opacity: 0; transform: translateY(-50%) rotate(25deg) scaleY(1); }
-        50% { opacity: 0.5; transform: translateY(-50%) rotate(30deg) scaleY(1.2); }
-      }
-      .light-ray:nth-child(2) {
-         @keyframes light-ray-anim {
-          0%, 100% { opacity: 0; transform: translateY(-50%) rotate(-25deg) scaleY(1); }
-          50% { opacity: 0.5; transform: translateY(-50%) rotate(-30deg) scaleY(1.2); }
-        }
+      @keyframes wave-anim {
+        from { transform: rotate(0deg) scale(1); }
+        to { transform: rotate(45deg) scale(1.1); }
       }
 
       @keyframes particle-drift {
@@ -244,6 +242,14 @@ const CinematicBackgroundStyles = () => (
         .cinematic-bg *, .cinematic-bg {
           animation: none !important;
           transition: none !important;
+        }
+      }
+      @media (max-width: 768px) {
+        .wave-container {
+          transform: none;
+        }
+        .particle {
+          transition: none;
         }
       }
     `}</style>
@@ -278,16 +284,16 @@ const CinematicBackground: React.FC<{
   }, [isSoundOn]);
   
   useEffect(() => {
-    if (!parallax) return;
+    if (!parallax || window.matchMedia('(max-width: 768px)').matches) return;
     
     const handleMouseMove = (e: MouseEvent) => {
         if (containerRef.current) {
             const { clientX, clientY } = e;
             const { innerWidth, innerHeight } = window;
-            const x = (clientX / innerWidth) * 100;
-            const y = (clientY / innerHeight) * 100;
-            containerRef.current.style.setProperty('--mouse-x', `${x}%`);
-            containerRef.current.style.setProperty('--mouse-y', `${y}%`);
+            const x = (clientX / innerWidth) - 0.5; // range -0.5 to 0.5
+            const y = (clientY / innerHeight) - 0.5; // range -0.5 to 0.5
+            containerRef.current.style.setProperty('--mouse-x', `${x}`);
+            containerRef.current.style.setProperty('--mouse-y', `${y}`);
         }
     };
     
@@ -302,12 +308,20 @@ const CinematicBackground: React.FC<{
     const isBokeh = Math.random() > 0.5;
     const duration = Math.random() * 20 + 20;
     const delay = Math.random() * -duration;
+    
+    const isBlue = Math.random() > 0.7;
+    const bgColor = isBlue ? 'rgba(0, 191, 255, 0.6)' : 'rgba(185, 77, 255, 0.6)';
+    const glowColor = isBlue ? 'rgba(0, 191, 255, 0.8)' : 'rgba(185, 77, 255, 0.8)';
+    const parallaxFactor = isBokeh ? -15 : -8;
+
 
     const style: React.CSSProperties = {
       width: `${size}px`,
       height: `${size}px`,
       left: `${Math.random() * 100}%`,
       top: `${Math.random() * 100}%`,
+      '--particle-bg-color': bgColor,
+      '--particle-glow-color': glowColor,
       '--x-start': `${Math.random() * 10 - 5}vw`,
       '--y-start': `${Math.random() * 10 - 5}vh`,
       '--x-end': `${Math.random() * 10 - 5}vw`,
@@ -316,7 +330,7 @@ const CinematicBackground: React.FC<{
       '--op-end': Math.random() * 0.5,
       animationDuration: `${duration}s`,
       animationDelay: `${delay}s`,
-      transform: `translate(calc(var(--mouse-x) * ${ (isBokeh ? -1 : -0.5) * (size / 2) }px - 50%), calc(var(--mouse-y) * ${ (isBokeh ? -1 : -0.5) * (size / 2) }px - 50%))`
+      transform: `translate(calc(var(--mouse-x) * ${parallaxFactor}px - 50%), calc(var(--mouse-y) * ${parallaxFactor}px - 50%))`
     };
     
     return <div key={i} className={`particle ${isBokeh ? 'bokeh' : 'dust'}`} style={style} />;
@@ -325,15 +339,13 @@ const CinematicBackground: React.FC<{
   return (
     <div className="cinematic-bg" ref={containerRef}>
       <CinematicBackgroundStyles />
-      <div className="gradient-overlay" />
+      <div className="wave-container">
+        <div className="wave wave-1" />
+        <div className="wave wave-2" />
+      </div>
       <div className="vignette" />
       {grain && <div className="film-grain" />}
       
-      <div className="light-rays">
-        <div className="light-ray" style={{transform: `translateX(calc(var(--mouse-x) * -0.5px - 50%)) translateY(calc(var(--mouse-y) * -0.5px - 50%)) rotate(25deg)`}}/>
-        <div className="light-ray" style={{transform: `translateX(calc(var(--mouse-x) * -0.5px - 50%)) translateY(calc(var(--mouse-y) * -0.5px - 50%)) rotate(-25deg)`}}/>
-      </div>
-
       <div className="particles-container">{particles}</div>
 
       {sound && (
@@ -525,7 +537,7 @@ const App: React.FC = () => {
 
   return (
     <div className="relative min-h-screen bg-transparent text-gray-300 antialiased">
-      <CinematicBackground />
+      <CinematicBackground parallax={true} sound={true} grain={true} />
       <div className="relative z-10">
         <KeyframeStyles />
         <header className="sticky top-0 z-40 bg-[#0f1117]/80 backdrop-blur-lg border-b border-white/10" role="banner">
