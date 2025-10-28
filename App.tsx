@@ -150,6 +150,12 @@ const SpeakerIcon: React.FC<{ muted: boolean } & React.SVGProps<SVGSVGElement>> 
     </svg>
 );
 
+const FileSizeIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375" />
+    </svg>
+);
+
 // ====================================================================================
 // 4. UI COMPONENTS - The building blocks of the page
 // ====================================================================================
@@ -376,6 +382,20 @@ const KeyframeStyles = () => (
   `}</style>
 );
 
+const PageHeader: React.FC = () => (
+    <div className="text-center my-8 md:my-16" aria-labelledby="site-title">
+        <span className="text-6xl md:text-7xl" role="img" aria-label="controller emoji">🎮</span>
+        <h1 
+            id="site-title"
+            className="text-4xl md:text-5xl font-semibold text-white tracking-wider mt-4" 
+            style={{ textShadow: '0 0 20px rgba(255, 255, 255, 0.5)' }}
+        >
+            Letmod.site
+        </h1>
+        <p id="page-subtitle" className="text-lg text-[#A0A3B1] mt-2 font-medium">Premium modded apps collection</p>
+    </div>
+);
+
 const TimelineHeader: React.FC = () => (
   <div className="flex flex-col items-center justify-center my-8 md:my-12 text-center" aria-label="Current Event">
     <h2
@@ -414,94 +434,108 @@ const StarRating: React.FC<{ rating: number }> = ({ rating }) => {
 
 const GameCard: React.FC<{ game: Game; onInstallClick: (game: Game) => void; }> = ({ game, onInstallClick }) => {
   const [imgError, setImgError] = useState(false);
+  const [imgLoaded, setImgLoaded] = useState(false);
 
   return (
     <article
-      className="relative group overflow-hidden rounded-2xl bg-gradient-to-br from-[#1a1d27] to-[#12141a] transition-all duration-400 ease-in-out hover:-translate-y-2 shadow-2xl shadow-black/50"
+      className="group bg-gradient-to-br from-[#1E2230]/80 to-[#14161C]/80 rounded-2xl p-4 flex flex-col gap-4 transition-all duration-300 hover:scale-103 shadow-lg hover:shadow-blue-500/20 ring-1 ring-white/10 backdrop-blur-sm cursor-pointer"
       onClick={() => onInstallClick(game)}
       onKeyPress={(e) => e.key === 'Enter' && onInstallClick(game)}
       tabIndex={0}
       role="button"
-      aria-label={`View details for ${game.title}`}
+      aria-label={`Download ${game.title}`}
     >
-      <div className="absolute -inset-2 bg-gradient-to-r from-[#0077ff] to-[#b94dff] opacity-20 transition-opacity duration-400 group-hover:opacity-75 blur-3xl"></div>
-      <div className="relative flex flex-col overflow-hidden rounded-2xl bg-black/50 backdrop-blur-xl ring-1 ring-white/10 h-full">
-        <div className="aspect-video w-full overflow-hidden bg-gradient-to-br from-blue-900/50 to-violet-800/50 flex items-center justify-center p-2">
+        <div className="w-full overflow-hidden rounded-lg bg-gradient-to-br from-blue-900/20 to-violet-700/20 flex items-center justify-center p-2 shadow-[inset_0_2px_10px_rgba(0,0,0,0.4)] transition-transform duration-300 ease-in-out group-hover:scale-103 h-32 md:h-28 xl:h-24">
           {imgError ? (
-            <div className="text-center text-sm text-gray-500">Image loading...</div>
+            <div className="text-center text-xs text-gray-500">Image not available</div>
           ) : (
             <img
               src={game.image}
               alt={game.title}
-              className="h-full w-full object-contain transition-all duration-400 ease-in-out group-hover:scale-110 filter blur-[1px] saturate-90 group-hover:blur-0 group-hover:saturate-100"
+              className={`h-full w-full object-contain transition-all duration-300 ease-in-out rounded-md ${imgLoaded ? 'opacity-100' : 'opacity-0'} [filter:brightness(1.1)_contrast(1.05)_saturate(1.05)_drop-shadow(0_2px_5px_rgba(0,0,0,0.5))] group-hover:[filter:brightness(1.2)_contrast(1.1)_drop-shadow(0_4px_15px_rgba(0,123,255,0.4))]`}
               onError={() => setImgError(true)}
+              onLoad={() => setImgLoaded(true)}
+              loading="lazy"
             />
           )}
         </div>
-        <div className="flex flex-1 flex-col p-4">
-          <h3 className="text-lg font-bold text-white">{game.title}</h3>
-          <p className="text-xs text-white/60">{game.developer} • {game.genre}</p>
-          <div className="flex-1">
-            <p className="mt-2 text-sm text-white/80">{game.description}</p>
-            <div className="mt-2 space-y-0.5">
-                <p className="text-xs text-white/50">Platforms: Android & iOS</p>
-                <p className="text-xs text-white/50">Size: {game.size}</p>
+
+        <div className="flex flex-col flex-grow">
+            <h3 className="text-base font-bold text-white truncate">{game.title}</h3>
+            <p className="text-xs text-[#A0A3B1]">{game.developer}</p>
+        
+            <p className="text-sm text-gray-400 mt-2 line-clamp-2 h-10">{game.description}</p>
+        
+            <div className="flex items-center justify-between text-xs text-[#A0A3B1] mt-auto pt-3">
+                <div className="flex items-center gap-2">
+                    <span className="font-semibold text-gray-300">Android & iOS</span>
+                    <span className="flex items-center gap-1">
+                        <FileSizeIcon className="w-3 h-3" />
+                        {game.size}
+                    </span>
+                </div>
+                <StarRating rating={game.rating} />
             </div>
-            <div className="mt-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
-              <p className="text-xs font-bold text-slate-50/90 tracking-wide">Mod Version Description</p>
-              <p className="mt-1 text-xs text-slate-50/90 whitespace-pre-wrap">
-                {game.modDescription}
-              </p>
-            </div>
-          </div>
-          <div className="mt-4 flex items-center justify-between">
-            <StarRating rating={game.rating} />
-            <button
-              onClick={(e) => { e.stopPropagation(); onInstallClick(game); }}
-              aria-label={`Install ${game.title}`}
-              className="rounded-lg bg-gradient-to-r from-blue-500/80 to-purple-600/80 px-4 py-2 text-sm font-bold text-white shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-[0_0_20px_theme(colors.blue.500)]"
-            >
-              Install
-            </button>
-          </div>
         </div>
-      </div>
+
+      <button
+        onClick={(e) => { e.stopPropagation(); onInstallClick(game); }}
+        aria-label={`Download ${game.title}`}
+        className="w-full rounded-lg bg-[#007BFF] px-4 py-2 text-sm font-bold text-white shadow-lg transition-all duration-300 ease-in-out hover:bg-blue-500 hover:shadow-[0_0_15px_#007BFF]"
+      >
+        Download
+      </button>
     </article>
   );
 };
 
 
 const GameGrid: React.FC<{ games: Game[]; onInstallClick: (game: Game) => void; }> = ({ games, onInstallClick }) => (
-  <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
+  <div className="grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-3 xl:grid-cols-4">
     {games.map((game) => <GameCard key={game.id} game={game} onInstallClick={onInstallClick} />)}
   </div>
 );
 
 const Modal: React.FC<{ game: Game; onClose: () => void; onConfirm: () => void; }> = ({ game, onClose, onConfirm }) => (
   <div
-    className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-lg"
+    className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-xl animate-fade-in"
     aria-labelledby="modal-title" role="dialog" aria-modal="true" onClick={onClose}
   >
+    <style>{`
+      @keyframes fade-in {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      @keyframes scale-in {
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
+      }
+      .animate-fade-in { animation: fade-in 0.3s ease-out; }
+      .animate-scale-in { animation: scale-in 0.3s ease-out; }
+    `}</style>
     <div
-      className="relative w-full max-w-sm transform rounded-2xl bg-gradient-to-br from-[#202329] to-[#181a1f] text-left shadow-2xl shadow-black/50 ring-1 ring-white/10 transition-all"
+      className="relative w-full max-w-sm transform rounded-3xl bg-gradient-to-br from-[#1A1C22]/90 to-[#0B0D10]/90 text-left shadow-black/50 ring-1 ring-white/10 transition-all shadow-[0_25px_50px_-12px_var(--tw-shadow-color),_0_0_40px_rgba(0,123,255,0.3)] overflow-hidden animate-scale-in"
       onClick={(e) => e.stopPropagation()} role="document"
     >
-      <div className="p-5">
-        <div className="sm:flex sm:items-start">
-          <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 sm:mx-0">
-            <DownloadIcon className="h-5 w-5 text-white" />
+      {/* Light Reflection Effect */}
+      <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-white/10 to-transparent pointer-events-none" />
+
+      <div className="p-6">
+        <div className="flex flex-col items-center text-center">
+          <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg shadow-blue-500/30">
+            <DownloadIcon className="h-6 w-6 text-white" />
           </div>
-          <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-            <h3 className="text-lg font-semibold leading-6 text-white" id="modal-title">Confirm Download</h3>
-            <div className="mt-2">
-              <p className="text-sm text-gray-400">Prepare to install <strong className="font-bold text-gray-200">{game.title}</strong>.</p>
+          <div className="mt-4">
+            <h3 className="text-xl font-bold leading-6 text-white tracking-wide" id="modal-title">Confirm Download</h3>
+            <div className="mt-2.5">
+              <p className="text-sm text-[#B0B3C0]">Prepare to install <strong className="font-semibold text-white">{game.title}</strong>.</p>
             </div>
           </div>
         </div>
       </div>
-      <div className="flex flex-row-reverse gap-3 rounded-b-2xl bg-white/5 px-5 py-4">
-        <button type="button" className="inline-flex w-full justify-center rounded-lg bg-gradient-to-r from-blue-600 to-purple-700 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-300 hover:scale-105 hover:from-blue-500 hover:to-purple-600 sm:ml-3 sm:w-auto" onClick={onConfirm}>Confirm</button>
-        <button type="button" className="inline-flex w-full justify-center rounded-lg bg-gray-700/50 px-4 py-2 text-sm font-semibold text-gray-200 shadow-sm ring-1 ring-inset ring-gray-600/50 transition-colors hover:bg-gray-600/50 sm:w-auto" onClick={onClose}>Cancel</button>
+      <div className="flex flex-row-reverse gap-3 rounded-b-3xl bg-black/30 px-6 py-4">
+        <button type="button" className="inline-flex w-full justify-center rounded-xl bg-gradient-to-r from-[#007BFF] to-[#5A6FFF] px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/20 transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-[0_0_20px_#007BFF,inset_0_0_10px_rgba(255,255,255,0.2)] sm:ml-3 sm:w-auto" onClick={onConfirm}>Confirm</button>
+        <button type="button" className="inline-flex w-full justify-center rounded-xl bg-gradient-to-br from-gray-700 to-gray-800 px-5 py-2.5 text-sm font-semibold text-gray-200 shadow-sm ring-1 ring-inset ring-white/10 transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-[inset_0_0_10px_rgba(255,255,255,0.1)] hover:ring-white/20 sm:w-auto" onClick={onClose}>Cancel</button>
       </div>
     </div>
   </div>
@@ -541,8 +575,7 @@ const App: React.FC = () => {
       <div className="relative z-10">
         <KeyframeStyles />
         <header className="sticky top-0 z-40 bg-[#0f1117]/80 backdrop-blur-lg border-b border-white/10" role="banner">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-               <h1 className="text-2xl font-extrabold tracking-tighter bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">BEST GAME</h1>
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 flex justify-end items-center">
                <div className="relative w-full max-w-xs">
                   <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                     <SearchIcon className="h-5 w-5 text-gray-500" />
@@ -561,6 +594,7 @@ const App: React.FC = () => {
 
         <main className="px-4 py-8 sm:px-6 lg:px-8" role="main">
           <div className="mx-auto max-w-7xl">
+            <PageHeader />
             <TimelineHeader />
             {filteredGames.length > 0 ? (
               <GameGrid games={filteredGames} onInstallClick={handleOpenModal} />
